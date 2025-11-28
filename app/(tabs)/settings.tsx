@@ -2,6 +2,7 @@ import { useMealPlan } from '@/components/MealPlanContext';
 import StorageService from '@/services/StorageService';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
+import Constants from 'expo-constants';
 import {
   Alert,
   Modal,
@@ -26,6 +27,7 @@ const SettingsScreen = () => {
     hasApiKey: false,
     isFirstTime: true,
   });
+  const [configHasGeminiKey, setConfigHasGeminiKey] = useState(false);
 
   const { clearPersonalInfo, clearAllMeals } = useMealPlan();
 
@@ -42,6 +44,14 @@ const SettingsScreen = () => {
 
       const stats = await StorageService.getStorageStats();
       setStorageStats(stats);
+
+      // Check if an embedded GEMINI_API_KEY is provided via expo.extra
+      try {
+        const extra = (Constants.expoConfig && (Constants.expoConfig.extra as any)) || (Constants.manifest && (Constants.manifest.extra as any));
+        setConfigHasGeminiKey(!!extra?.GEMINI_API_KEY);
+      } catch (e) {
+        setConfigHasGeminiKey(false);
+      }
     } catch (error) {
       console.error('Error loading settings:', error);
     }
@@ -235,6 +245,37 @@ const SettingsScreen = () => {
               autoCorrect={false}
             />
           </View>
+
+          {/** Option to save embedded config key to SecureStore if present */}
+          {!geminiApiKey && configHasGeminiKey && (
+            <View style={{ marginBottom: 24 }}>
+              <Text style={{ color: '#666', marginBottom: 8 }}>
+                A default Gemini API key is available in the app configuration. You can save that key to your device to use it persistently, or paste your own key above to override it.
+              </Text>
+              <TouchableOpacity
+                style={[styles.saveButton, { backgroundColor: '#1976D2' }]}
+                onPress={async () => {
+                  try {
+                    const extra = (Constants.expoConfig && (Constants.expoConfig.extra as any)) || (Constants.manifest && (Constants.manifest.extra as any));
+                    const defaultKey = extra?.GEMINI_API_KEY;
+                    if (!defaultKey) {
+                      Alert.alert('No default key', 'No Gemini API key found in app configuration.');
+                      return;
+                    }
+                    await StorageService.saveGeminiApiKey(defaultKey);
+                    setShowApiKeyModal(false);
+                    await loadSettings();
+                    Alert.alert('Success', 'Default API key saved to device securely.');
+                  } catch (err) {
+                    console.error('Error saving default key:', err);
+                    Alert.alert('Error', 'Failed to save the default API key.');
+                  }
+                }}
+              >
+                <Text style={styles.saveButtonText}>Save Default Config Key</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           <TouchableOpacity style={styles.saveButton} onPress={handleSaveApiKey}>
             <Text style={styles.saveButtonText}>Save API Key</Text>
@@ -439,193 +480,228 @@ export default SettingsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f1e3ec',
+    backgroundColor: '#F7F8FA',
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 24,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1A1A1A',
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginHorizontal: 20,
-    marginBottom: 12,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginHorizontal: 24,
+    marginBottom: 14,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
-    marginHorizontal: 20,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 24,
     marginBottom: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     paddingVertical: 16,
+    borderWidth: 1,
+    borderColor: '#EDEDED',
   },
   settingIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#E8F5E8',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#4A6CF7',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   settingContent: {
     flex: 1,
   },
   settingTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: '700',
+    color: '#1A1A1A',
   },
   settingSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 2,
+    fontSize: 13,
+    color: '#707070',
+    marginTop: 4,
+    fontWeight: '500',
   },
   statsContainer: {
-    backgroundColor: 'white',
-    marginHorizontal: 20,
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 24,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#EDEDED',
+    shadowColor: 'rgba(0,0,0,0.05)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   statItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
   statLabel: {
     fontSize: 14,
-    color: '#666',
+    color: '#707070',
+    fontWeight: '500',
   },
   statValue: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1A1A1A',
   },
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: '#f1e3ec',
+    backgroundColor: '#F7F8FA',
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: '#EDEDED',
   },
   modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1A1A1A',
   },
   modalContent: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
   modalSection: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   modalSectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: '700',
+    color: '#1A1A1A',
     marginBottom: 12,
   },
   modalText: {
     fontSize: 14,
-    color: '#666',
+    color: '#707070',
     marginBottom: 8,
-    lineHeight: 20,
+    lineHeight: 22,
+    fontWeight: '500',
   },
   inputGroup: {
-    marginBottom: 24,
+    marginBottom: 28,
   },
   inputLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 10,
   },
   textInput: {
-    backgroundColor: 'white',
-    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
+    paddingVertical: 14,
+    fontSize: 15,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: '#EDEDED',
+    color: '#1A1A1A',
   },
   saveButton: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 12,
-    paddingVertical: 16,
+    backgroundColor: '#4A6CF7',
+    borderRadius: 16,
+    paddingVertical: 14,
     alignItems: 'center',
+    shadowColor: 'rgba(74,108,247,0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   saveButtonText: {
     color: 'white',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   dangerButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#FFF3E0', // Light orange background
-    borderRadius: 12,
-    paddingHorizontal: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    paddingHorizontal: 18,
     paddingVertical: 16,
-    marginTop: 12,
-    marginHorizontal: 20,
+    marginTop: 16,
+    marginHorizontal: 24,
+    borderWidth: 1,
+    borderColor: '#EDEDED',
+    shadowColor: 'rgba(0,0,0,0.05)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   dangerButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   dangerButtonText: {
-    marginLeft: 12,
+    marginLeft: 14,
   },
   dangerButtonTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#FF5722',
   },
   dangerButtonSubtitle: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#FF5722',
-    marginTop: 2,
+    marginTop: 4,
+    fontWeight: '500',
   },
   localStorageContainer: {
-    backgroundColor: 'white',
-    marginHorizontal: 20,
-    borderRadius: 12,
-    padding: 16,
-    marginTop: 12,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 24,
+    borderRadius: 20,
+    padding: 20,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: '#EDEDED',
+    shadowColor: 'rgba(0,0,0,0.05)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   localStorageTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 10,
   },
   localStorageDescription: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 12,
+    color: '#707070',
+    marginBottom: 14,
+    fontWeight: '500',
   },
   localStorageItems: {
     //
@@ -633,11 +709,12 @@ const styles = StyleSheet.create({
   localStorageItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   localStorageItemText: {
     fontSize: 14,
-    color: '#333',
-    marginLeft: 8,
+    color: '#1A1A1A',
+    marginLeft: 10,
+    fontWeight: '500',
   },
 }); 

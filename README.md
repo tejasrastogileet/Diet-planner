@@ -67,6 +67,31 @@ npm start
    - Scan the QR code with Expo Go app (iOS/Android)
    - Or press 'i' for iOS simulator or 'a' for Android emulator
 
+### Gemini API key (development / local)
+
+This project uses Google Generative AI (Gemini) for AI-powered meal recommendations. The app can read a `GEMINI_API_KEY` from `expo.extra` so you can provide it during development without modifying the app code.
+
+Recommended local setup (do NOT commit your real key):
+
+1. Copy `.env.example` to `.env` and add your key:
+
+```powershell
+cp .env.example .env
+# then edit .env and set GEMINI_API_KEY to your key
+```
+
+2. Start Expo as usual — `app.config.js` will inject `GEMINI_API_KEY` into `expo.extra` when you run the dev server.
+
+3. Alternatively, for production builds, use secure methods such as EAS secrets or a backend proxy. Do not store production API keys in `app.json` or commit them into source control.
+
+How the app reads the key:
+- At startup the app attempts to read `GEMINI_API_KEY` from `expo.extra` and calls `GeminiService.setApiKey(...)` automatically.
+- Users can also enter their own Gemini API key inside the app `Settings` screen; the key is then stored in `expo-secure-store` (this is the app's default behavior).
+
+Security note:
+- Never commit `.env` with real secrets. Use `gitignore` to keep `.env` local.
+- For production, prefer EAS secrets or a server-side proxy to avoid embedding secrets in the app binary.
+
 ## Project Structure
 
 ```
