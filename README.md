@@ -1,4 +1,6 @@
-# AI Food Planner MVP
+NutriBrain
+       ~Nutrition Powered by Intelligence.
+
 
 A React Native mobile application that helps users plan their meals with AI-powered food recommendations and nutritional tracking.
 
@@ -106,8 +108,8 @@ ai-diet-planner/
 ├── components/
 │   ├── AIFoodRecommendation.tsx  # AI recommendations modal
 │   ├── MealPlanContext.tsx       # State management
-│   └── ...                     # Other UI components
-├── assets/                     # Images and fonts
+│   └── ...                    
+├── assets/                     
 └── package.json
 ```
 
@@ -151,13 +153,7 @@ Analytics dashboard with:
 - **Barcode Scanning**: Scan food items for automatic nutritional data
 - **Dietary Restrictions**: Support for various dietary needs (vegetarian, gluten-free, etc.)
 
-## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
 
 ## License
 
