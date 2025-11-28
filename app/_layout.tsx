@@ -7,6 +7,7 @@ import Constants from 'expo-constants';
 import React, { useEffect } from 'react';
 
 import { MealPlanProvider } from '@/components/MealPlanContext';
+import { ThemeProvider as CustomThemeProvider } from '@/components/ThemeContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import GeminiService from '@/services/GeminiService';
 
@@ -41,13 +42,15 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <MealPlanProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-      </MealPlanProvider>
+      <CustomThemeProvider>
+        <MealPlanProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </MealPlanProvider>
+      </CustomThemeProvider>
     </ThemeProvider>
   );
 }

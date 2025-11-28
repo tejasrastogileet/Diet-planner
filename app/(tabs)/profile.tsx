@@ -1,4 +1,5 @@
 import { useMealPlan } from '@/components/MealPlanContext';
+import { useTheme } from '@/components/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -12,6 +13,7 @@ import {
 
 const ProfileScreen = () => {
   const { getTotalNutrition, nutritionalData } = useMealPlan();
+  const { theme, colors } = useTheme();
   const totalNutrition = getTotalNutrition();
 
   const ProfileCard = ({ 
@@ -27,14 +29,14 @@ const ProfileScreen = () => {
     value: string; 
     subtitle?: string; 
   }) => (
-    <View style={styles.profileCard}>
+    <View style={[styles.profileCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
       <View style={[styles.profileIcon, { backgroundColor: color }]}>
         <Ionicons name={icon as any} size={20} color="white" />
       </View>
       <View style={styles.profileContent}>
-        <Text style={styles.profileTitle}>{title}</Text>
-        <Text style={styles.profileValue}>{value}</Text>
-        {subtitle && <Text style={styles.profileSubtitle}>{subtitle}</Text>}
+        <Text style={[styles.profileTitle, { color: colors.textSecondary }]}>{title}</Text>
+        <Text style={[styles.profileValue, { color: colors.text }]}>{value}</Text>
+        {subtitle && <Text style={[styles.profileSubtitle, { color: colors.textTertiary }]}>{subtitle}</Text>}
       </View>
     </View>
   );
@@ -50,46 +52,46 @@ const ProfileScreen = () => {
     description: string; 
     achieved: boolean; 
   }) => (
-    <View style={[styles.achievementCard, achieved && styles.achievementCardAchieved]}>
+    <View style={[styles.achievementCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }, achieved && styles.achievementCardAchieved]}>
       <View style={[styles.achievementIcon, achieved && styles.achievementIconAchieved]}>
-        <Ionicons name={icon as any} size={20} color={achieved ? "#4CAF50" : "#999"} />
+        <Ionicons name={icon as any} size={20} color={achieved ? "#4CAF50" : colors.textTertiary} />
       </View>
       <View style={styles.achievementContent}>
-        <Text style={[styles.achievementTitle, achieved && styles.achievementTitleAchieved]}>
+        <Text style={[styles.achievementTitle, { color: achieved ? colors.text : colors.textTertiary }, achieved && styles.achievementTitleAchieved]}>
           {title}
         </Text>
-        <Text style={styles.achievementDescription}>{description}</Text>
+        <Text style={[styles.achievementDescription, { color: colors.textSecondary }]}>{description}</Text>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
           <TouchableOpacity style={styles.headerButton}>
-            <Ionicons name="settings-outline" size={24} color="#333" />
+            <Ionicons name="settings-outline" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
 
         {/* User Info */}
         <View style={styles.userSection}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
+          <View style={[styles.avatarContainer, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+            <View style={[styles.avatar, { backgroundColor: colors.accent }]}>
               <Text style={styles.avatarText}>T</Text>
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.userName}>{'Tejas'}</Text>
-              <Text style={styles.userEmail}>{'tejasrastogi456@gmail.com'}</Text>
+              <Text style={[styles.userName, { color: colors.text }]}>{'Tejas'}</Text>
+              <Text style={[styles.userEmail, { color: colors.textSecondary }]}>{'tejasrastogi456@gmail.com'}</Text>
             </View>
           </View>
         </View>
 
         {/* Stats Overview */}
         <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>Your Stats</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Your Stats</Text>
           <View style={styles.statsGrid}>
             <ProfileCard
               icon="flame"
@@ -124,7 +126,7 @@ const ProfileScreen = () => {
 
         {/* Achievements */}
         <View style={styles.achievementsSection}>
-          <Text style={styles.sectionTitle}>Achievements</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Achievements</Text>
           <AchievementCard
             icon="star"
             title="First Week"
@@ -153,33 +155,33 @@ const ProfileScreen = () => {
 
         {/* Quick Actions */}
         <View style={styles.actionsSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Quick Actions</Text>
           <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="person-outline" size={20} color="#4CAF50" />
-              <Text style={styles.actionText}>Edit Profile</Text>
+            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+              <Ionicons name="person-outline" size={20} color={colors.accent} />
+              <Text style={[styles.actionText, { color: colors.text }]}>Edit Profile</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="notifications-outline" size={20} color="#4CAF50" />
-              <Text style={styles.actionText}>Notifications</Text>
+            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+              <Ionicons name="notifications-outline" size={20} color={colors.accent} />
+              <Text style={[styles.actionText, { color: colors.text }]}>Notifications</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="help-circle-outline" size={20} color="#4CAF50" />
-              <Text style={styles.actionText}>Help & Support</Text>
+            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+              <Ionicons name="help-circle-outline" size={20} color={colors.accent} />
+              <Text style={[styles.actionText, { color: colors.text }]}>Help & Support</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="share-outline" size={20} color="#4CAF50" />
-              <Text style={styles.actionText}>Share Progress</Text>
+            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+              <Ionicons name="share-outline" size={20} color={colors.accent} />
+              <Text style={[styles.actionText, { color: colors.text }]}>Share Progress</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Footer */}
         <View style={styles.footerSection}>
-          <Text style={styles.footerText}>Made with ❤ by Tejas</Text>
+          <Text style={[styles.footerText, { color: colors.textSubtle }]}>Made with ❤ by Tejas</Text>
         </View>
       </ScrollView>
     </SafeAreaView>

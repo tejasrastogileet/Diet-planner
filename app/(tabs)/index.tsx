@@ -1,4 +1,5 @@
 import { useMealPlan } from "@/components/MealPlanContext";
+import { useTheme } from "@/components/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -18,6 +19,7 @@ const HomeScreen = ({ onNavigate }: { onNavigate?: (tab: string) => void }) => {
   const [selectedView, setSelectedView] = useState("Daily");
   const { meals, nutritionalData, getTotalNutrition, personalInfo } =
     useMealPlan();
+  const { theme, colors } = useTheme();
   const totalNutrition = getTotalNutrition();
 
   const MetricCard = ({
@@ -37,16 +39,16 @@ const HomeScreen = ({ onNavigate }: { onNavigate?: (tab: string) => void }) => {
     const isOverTarget = value > target;
 
     return (
-      <View style={styles.metricCard}>
+      <View style={[styles.metricCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
         <View style={[styles.metricIcon, { backgroundColor: color }]}>
           <Ionicons name={icon as any} size={20} color="white" />
         </View>
-        <Text style={styles.metricTitle}>{title}:</Text>
-        <Text style={styles.metricValue}>
+        <Text style={[styles.metricTitle, { color: colors.textSecondary }]}>{title}:</Text>
+        <Text style={[styles.metricValue, { color: colors.text }]}>
           {value}/{target}
           {title === "Calorie" ? " kcal" : "g"}
         </Text>
-        <View style={styles.progressBar}>
+        <View style={[styles.progressBar, { backgroundColor: colors.cardBorder }]}>
           <View
             style={[
               styles.progressFill,
@@ -70,35 +72,35 @@ const HomeScreen = ({ onNavigate }: { onNavigate?: (tab: string) => void }) => {
   };
 
   const MealCard = ({ meal }: { meal: any }) => (
-    <View style={styles.mealCard}>
+    <View style={[styles.mealCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
       <View style={styles.mealHeader}>
         <View>
-          <Text style={styles.mealTitle}>{meal.title}</Text>
-          <Text style={styles.mealTime}>({meal.time})</Text>
+          <Text style={[styles.mealTitle, { color: colors.text }]}>{meal.title}</Text>
+          <Text style={[styles.mealTime, { color: colors.textSecondary }]}>({meal.time})</Text>
         </View>
         {meal.hasFood ? (
           <Ionicons name="checkmark" size={20} color="#4CAF50" />
         ) : (
-          <Ionicons name="add" size={20} color="#999" />
+          <Ionicons name="add" size={20} color={colors.textTertiary} />
         )}
       </View>
-      {meal.food && <Text style={styles.mealFood}>{meal.food.name}</Text>}
+      {meal.food && <Text style={[styles.mealFood, { color: colors.text }]}>{meal.food.name}</Text>}
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* App Title and Tagline */}
         <View style={styles.titleBar}>
-          <Text style={styles.appTitle}>NutriBrain</Text>
-          <Text style={styles.tagline}>Nutrition Powered by Intelligence.</Text>
+          <Text style={[styles.appTitle, { color: colors.accent }]}>NutriBrain</Text>
+          <Text style={[styles.tagline, { color: colors.textSecondary }]}>Nutrition Powered by Intelligence.</Text>
         </View>
 
         {/* Greeting */}
         <View style={styles.greetingContainer}>
-          <Text style={styles.greetingText}>Greetings there,</Text>
-          <Text style={styles.questionText}>Are You Eating Healthy?</Text>
+          <Text style={[styles.greetingText, { color: colors.textSecondary }]}>Greetings there,</Text>
+          <Text style={[styles.questionText, { color: colors.text }]}>Are You Eating Healthy?</Text>
         </View>
 
         {/* Metrics */}
@@ -128,15 +130,15 @@ const HomeScreen = ({ onNavigate }: { onNavigate?: (tab: string) => void }) => {
               />
             </>
           ) : (
-            <View style={styles.setupPrompt}>
-              <Ionicons name="person-add" size={48} color="#999" />
-              <Text style={styles.setupPromptTitle}>Complete Your Profile</Text>
-              <Text style={styles.setupPromptText}>
+            <View style={[styles.setupPrompt, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
+              <Ionicons name="person-add" size={48} color={colors.textTertiary} />
+              <Text style={[styles.setupPromptTitle, { color: colors.text }]}>Complete Your Profile</Text>
+              <Text style={[styles.setupPromptText, { color: colors.textSecondary }]}>
                 Set up your personal information to get personalized nutrition
                 targets and AI recommendations.
               </Text>
               <TouchableOpacity
-                style={styles.setupButton}
+                style={[styles.setupButton, { backgroundColor: colors.accent }]}
                 onPress={() => onNavigate?.("meals")}
               >
                 <Text style={styles.setupButtonText}>Go to Meals & Setup</Text>
@@ -146,22 +148,23 @@ const HomeScreen = ({ onNavigate }: { onNavigate?: (tab: string) => void }) => {
         </View>
 
         {/* View Toggle */}
-        <View style={styles.toggleContainer}>
+        <View style={[styles.toggleContainer, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
           <TouchableOpacity
             style={[
               styles.toggleButton,
-              selectedView === "Daily" && styles.toggleButtonActive,
+              selectedView === "Daily" && [styles.toggleButtonActive, { backgroundColor: colors.accent }],
             ]}
             onPress={() => setSelectedView("Daily")}
           >
             <Ionicons
               name="calendar"
               size={16}
-              color={selectedView === "Daily" ? "#333" : "#999"}
+              color={selectedView === "Daily" ? "#FFFFFF" : colors.textSecondary}
             />
             <Text
               style={[
                 styles.toggleText,
+                { color: selectedView === "Daily" ? "#FFFFFF" : colors.textSecondary },
                 selectedView === "Daily" && styles.toggleTextActive,
               ]}
             >
@@ -171,18 +174,19 @@ const HomeScreen = ({ onNavigate }: { onNavigate?: (tab: string) => void }) => {
           <TouchableOpacity
             style={[
               styles.toggleButton,
-              selectedView === "Weekly" && styles.toggleButtonActive,
+              selectedView === "Weekly" && [styles.toggleButtonActive, { backgroundColor: colors.accent }],
             ]}
             onPress={() => setSelectedView("Weekly")}
           >
             <Ionicons
               name="calendar-outline"
               size={16}
-              color={selectedView === "Weekly" ? "#333" : "#999"}
+              color={selectedView === "Weekly" ? "#FFFFFF" : colors.textSecondary}
             />
             <Text
               style={[
                 styles.toggleText,
+                { color: selectedView === "Weekly" ? "#FFFFFF" : colors.textSecondary },
                 selectedView === "Weekly" && styles.toggleTextActive,
               ]}
             >

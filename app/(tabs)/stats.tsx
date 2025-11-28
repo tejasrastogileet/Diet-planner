@@ -1,4 +1,5 @@
 import { useMealPlan } from '@/components/MealPlanContext';
+import { useTheme } from '@/components/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
@@ -18,6 +19,7 @@ const { width } = Dimensions.get('window');
 const StatsScreen = () => {
   const [selectedView, setSelectedView] = useState('Grid');
   const { nutritionalData, getTotalNutrition } = useMealPlan();
+  const { theme, colors } = useTheme();
   const totalNutrition = getTotalNutrition();
 
   const chartData = {
@@ -61,75 +63,86 @@ const StatsScreen = () => {
     value: number;
     target: number;
   }) => (
-    <View style={styles.statCard}>
+    <View style={[styles.statCard, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
       <View style={styles.statCardHeader}>
         <View style={[styles.statIcon, { backgroundColor: color }]}>
           <Ionicons name={icon as any} size={16} color="white" />
         </View>
-        <Ionicons name="expand-outline" size={16} color="#999" />
+        <Ionicons name="expand-outline" size={16} color={colors.textTertiary} />
       </View>
-      <Text style={styles.statTitle}>{title}</Text>
-      <Text style={styles.statValue}>{value}/{target}{title === 'Calorie' ? ' kcal' : 'g'}</Text>
+      <Text style={[styles.statTitle, { color: colors.textSecondary }]}>{title}</Text>
+      <Text style={[styles.statValue, { color: colors.text }]}>{value}/{target}{title === 'Calorie' ? ' kcal' : 'g'}</Text>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.headerTitle}>Your Stats</Text>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Your Stats</Text>
           </View>
           <TouchableOpacity>
-            <Ionicons name="person-outline" size={24} color="#333" />
+            <Ionicons name="person-outline" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
 
         {/* Smiley Icon */}
         <View style={styles.smileyContainer}>
-          <View style={styles.smileyIcon}>
+          <View style={[styles.smileyIcon, { backgroundColor: colors.accent + '20' }]}>
             <Text style={styles.smileyText}>😊</Text>
           </View>
         </View>
 
         {/* Chart */}
-        <View style={styles.chartContainer}>
+        <View style={[styles.chartContainer, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
           <LineChart
             data={chartData}
             width={width - 40}
             height={200}
-            chartConfig={chartConfig}
+            chartConfig={{
+              ...chartConfig,
+              backgroundColor: colors.card,
+              backgroundGradientFrom: colors.card,
+              backgroundGradientTo: colors.card,
+              color: () => colors.text,
+              labelColor: () => colors.textSecondary,
+              strokeColor: () => colors.accent,
+              gridColor: () => colors.cardBorder,
+            }}
             bezier
             style={styles.chart}
           />
         </View>
 
         {/* View Toggle */}
-        <View style={styles.toggleContainer}>
+        <View style={[styles.toggleContainer, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
           <TouchableOpacity
             style={[
               styles.toggleButton,
-              selectedView === 'Grid' && styles.toggleButtonActive
+              selectedView === 'Grid' && [styles.toggleButtonActive, { backgroundColor: colors.accent }]
             ]}
             onPress={() => setSelectedView('Grid')}
           >
-            <Ionicons name="grid" size={16} color={selectedView === 'Grid' ? '#333' : '#999'} />
+            <Ionicons name="grid" size={16} color={selectedView === 'Grid' ? '#FFFFFF' : colors.textSecondary} />
             <Text style={[
               styles.toggleText,
+              { color: selectedView === 'Grid' ? '#FFFFFF' : colors.textSecondary },
               selectedView === 'Grid' && styles.toggleTextActive
             ]}>Grid</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.toggleButton,
-              selectedView === 'Compact' && styles.toggleButtonActive
+              selectedView === 'Compact' && [styles.toggleButtonActive, { backgroundColor: colors.accent }]
             ]}
             onPress={() => setSelectedView('Compact')}
           >
-            <Ionicons name="list" size={16} color={selectedView === 'Compact' ? '#333' : '#999'} />
+            <Ionicons name="list" size={16} color={selectedView === 'Compact' ? '#FFFFFF' : colors.textSecondary} />
             <Text style={[
               styles.toggleText,
+              { color: selectedView === 'Compact' ? '#FFFFFF' : colors.textSecondary },
               selectedView === 'Compact' && styles.toggleTextActive
             ]}>Compact</Text>
           </TouchableOpacity>

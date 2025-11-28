@@ -29,6 +29,7 @@ class StorageService {
   private readonly MEALS_KEY = 'meals_data';
   private readonly GEMINI_API_KEY = 'gemini_api_key';
   private readonly FIRST_TIME_USER = 'first_time_user';
+  private readonly THEME_KEY = 'theme_preference';
 
   private constructor() {}
 
@@ -247,6 +248,25 @@ class StorageService {
         hasApiKey: false,
         isFirstTime: true,
       };
+    }
+  }
+
+  // Theme Management
+  async setTheme(theme: 'light' | 'dark'): Promise<void> {
+    try {
+      await SecureStore.setItemAsync(this.THEME_KEY, theme);
+    } catch (error) {
+      console.error('Error saving theme:', error);
+    }
+  }
+
+  async getTheme(): Promise<'light' | 'dark' | null> {
+    try {
+      const theme = await SecureStore.getItemAsync(this.THEME_KEY);
+      return theme as 'light' | 'dark' | null;
+    } catch (error) {
+      console.error('Error retrieving theme:', error);
+      return null;
     }
   }
 }

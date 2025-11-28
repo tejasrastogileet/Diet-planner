@@ -1,5 +1,6 @@
 import AIFoodRecommendation from '@/components/AIFoodRecommendation';
 import { useMealPlan } from '@/components/MealPlanContext';
+import { useTheme } from '@/components/ThemeContext';
 import StorageService from '@/services/StorageService';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
@@ -41,7 +42,7 @@ const MealsScreen = () => {
     personalInfo,
     isLoading: contextLoading 
   } = useMealPlan();
-  
+  const { theme, colors } = useTheme();
   const totalNutrition = getTotalNutrition();
 
   useEffect(() => {

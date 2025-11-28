@@ -1,4 +1,5 @@
 import { useMealPlan } from '@/components/MealPlanContext';
+import { useTheme } from '@/components/ThemeContext';
 import StorageService from '@/services/StorageService';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
@@ -30,10 +31,13 @@ const SettingsScreen = () => {
   const [configHasGeminiKey, setConfigHasGeminiKey] = useState(false);
 
   const { clearPersonalInfo, clearAllMeals } = useMealPlan();
+  const { theme, toggleTheme, colors } = useTheme();
 
   useEffect(() => {
     loadSettings();
-  }, []);
+    // Sync darkModeEnabled with actual theme
+    setDarkModeEnabled(theme === 'dark');
+  }, [theme]);
 
   const loadSettings = async () => {
     try {
@@ -176,23 +180,23 @@ const SettingsScreen = () => {
     showArrow?: boolean;
   }) => (
     <TouchableOpacity 
-      style={styles.settingItem} 
+      style={[styles.settingItem, { backgroundColor: colors.card, borderColor: colors.cardBorder }]} 
       onPress={onPress}
       disabled={!onPress}
     >
       <View style={styles.settingIcon}>
-        <Ionicons name={icon as any} size={24} color="#4CAF50" />
+        <Ionicons name={icon as any} size={24} color={colors.accent} />
       </View>
       <View style={styles.settingContent}>
-        <Text style={styles.settingTitle}>{title}</Text>
-        {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
+        <Text style={[styles.settingTitle, { color: colors.text }]}>{title}</Text>
+        {subtitle && <Text style={[styles.settingSubtitle, { color: colors.textSecondary }]}>{subtitle}</Text>}
       </View>
       {showSwitch ? (
         <Switch
           value={switchValue}
           onValueChange={onSwitchChange}
-          trackColor={{ false: '#E0E0E0', true: '#4CAF50' }}
-          thumbColor={switchValue ? '#fff' : '#f4f3f4'}
+          trackColor={{ false: colors.cardBorder, true: colors.accent }}
+          thumbColor={switchValue ? '#fff' : colors.textTertiary}
         />
       ) : showArrow && onPress ? (
         <Ionicons name="chevron-forward" size={20} color="#CCC" />
@@ -207,39 +211,40 @@ const SettingsScreen = () => {
       presentationStyle="pageSheet"
       onRequestClose={() => setShowApiKeyModal(false)}
     >
-      <SafeAreaView style={styles.modalContainer}>
-        <View style={styles.modalHeader}>
+      <SafeAreaView style={[styles.modalContainer, { backgroundColor: colors.bg }]}>
+        <View style={[styles.modalHeader, { borderBottomColor: colors.cardBorder }]}>
           <TouchableOpacity onPress={() => setShowApiKeyModal(false)}>
-            <Ionicons name="close" size={24} color="#333" />
+            <Ionicons name="close" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>Gemini API Key</Text>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>Gemini API Key</Text>
           <View style={{ width: 24 }} />
         </View>
 
         <ScrollView style={styles.modalContent}>
           <View style={styles.modalSection}>
-            <Text style={styles.modalSectionTitle}>How to get your API key:</Text>
-            <Text style={styles.modalText}>
+            <Text style={[styles.modalSectionTitle, { color: colors.text }]}>How to get your API key:</Text>
+            <Text style={[styles.modalText, { color: colors.textSecondary }]}>
               1. Go to Google AI Studio (https://makersuite.google.com/app/apikey)
             </Text>
-            <Text style={styles.modalText}>
+            <Text style={[styles.modalText, { color: colors.textSecondary }]}>
               2. Sign in with your Google account
             </Text>
-            <Text style={styles.modalText}>
+            <Text style={[styles.modalText, { color: colors.textSecondary }]}>
               3. Click "Create API Key"
             </Text>
-            <Text style={styles.modalText}>
+            <Text style={[styles.modalText, { color: colors.textSecondary }]}>
               4. Copy the generated key and paste it below
             </Text>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>API Key</Text>
+            <Text style={[styles.inputLabel, { color: colors.text }]}>API Key</Text>
             <TextInput
-              style={styles.textInput}
+              style={[styles.textInput, { backgroundColor: colors.inputBg, borderColor: colors.inputBorder, color: colors.text }]}
               value={geminiApiKey}
               onChangeText={setGeminiApiKey}
               placeholder="Enter your Gemini API key"
+              placeholderTextColor={colors.textTertiary}
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
@@ -249,11 +254,11 @@ const SettingsScreen = () => {
           {/** Option to save embedded config key to SecureStore if present */}
           {!geminiApiKey && configHasGeminiKey && (
             <View style={{ marginBottom: 24 }}>
-              <Text style={{ color: '#666', marginBottom: 8 }}>
+              <Text style={[{ color: colors.textSecondary, marginBottom: 8 }]}>
                 A default Gemini API key is available in the app configuration. You can save that key to your device to use it persistently, or paste your own key above to override it.
               </Text>
               <TouchableOpacity
-                style={[styles.saveButton, { backgroundColor: '#1976D2' }]}
+                style={[styles.saveButton, { backgroundColor: colors.accent }]}
                 onPress={async () => {
                   try {
                     const extra = (Constants.expoConfig && (Constants.expoConfig.extra as any)) || (Constants.manifest && (Constants.manifest.extra as any));
@@ -286,16 +291,16 @@ const SettingsScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.bg }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Settings</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Settings</Text>
         </View>
 
         {/* AI Configuration */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>AI Configuration</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>AI Configuration</Text>
           <SettingItem
             icon="key"
             title="Gemini API Key"
@@ -314,7 +319,7 @@ const SettingsScreen = () => {
 
         {/* App Settings */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>App Settings</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>App Settings</Text>
           <SettingItem
             icon="notifications"
             title="Notifications"
@@ -330,14 +335,14 @@ const SettingsScreen = () => {
             subtitle="Use dark theme"
             showSwitch={true}
             switchValue={darkModeEnabled}
-            onSwitchChange={setDarkModeEnabled}
+            onSwitchChange={() => toggleTheme()}
             showArrow={false}
           />
         </View>
 
         {/* Data Management */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data Management</Text>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Data Management</Text>
           <SettingItem
             icon="person"
             title="Personal Information"
@@ -358,22 +363,22 @@ const SettingsScreen = () => {
 
         {/* Storage Statistics */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Storage Statistics</Text>
-          <View style={styles.statsContainer}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Storage Statistics</Text>
+          <View style={[styles.statsContainer, { backgroundColor: colors.card, borderColor: colors.cardBorder }]}>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>Personal Info</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Personal Info</Text>
               <Text style={[styles.statValue, { color: storageStats.hasPersonalInfo ? '#4CAF50' : '#FF5722' }]}>
                 {storageStats.hasPersonalInfo ? 'Saved' : 'Not Set'}
               </Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>Meals</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Meals</Text>
               <Text style={[styles.statValue, { color: storageStats.hasMeals ? '#4CAF50' : '#FF5722' }]}>
                 {storageStats.hasMeals ? 'Saved' : 'None'}
               </Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statLabel}>API Key</Text>
+              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>API Key</Text>
               <Text style={[styles.statValue, { color: storageStats.hasApiKey ? '#4CAF50' : '#FF5722' }]}>
                 {storageStats.hasApiKey ? 'Configured' : 'Not Set'}
               </Text>
