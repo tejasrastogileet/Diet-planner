@@ -81,8 +81,8 @@ const ProfileScreen = () => {
               <Text style={styles.avatarText}>T</Text>
             </View>
             <View style={styles.userInfo}>
-              <Text style={styles.userName}>Tanim</Text>
-              <Text style={styles.userEmail}>tanim@example.com</Text>
+              <Text style={styles.userName}>{'Tejas'}</Text>
+              <Text style={styles.userEmail}>{'tejasrastogi456@gmail.com'}</Text>
             </View>
           </View>
         </View>
@@ -175,6 +175,11 @@ const ProfileScreen = () => {
               <Text style={styles.actionText}>Share Progress</Text>
             </TouchableOpacity>
           </View>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footerSection}>
+          <Text style={styles.footerText}>Made with ❤ by Tejas</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -384,5 +389,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1A1A1A',
     fontWeight: '700',
+  },
+  footerSection: {
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#9A9A9A',
+    fontWeight: '500',
   },
 }); 

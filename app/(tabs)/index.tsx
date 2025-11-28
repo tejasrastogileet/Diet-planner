@@ -89,16 +89,10 @@ const HomeScreen = ({ onNavigate }: { onNavigate?: (tab: string) => void }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.dateContainer}>
-            <Ionicons name="time-outline" size={16} color="#666" />
-            <Text style={styles.dateText}>July 14, 2025</Text>
-            <Ionicons name="chevron-down" size={16} color="#666" />
-          </View>
-          <TouchableOpacity>
-            <Ionicons name="person-outline" size={24} color="#333" />
-          </TouchableOpacity>
+        {/* App Title and Tagline */}
+        <View style={styles.titleBar}>
+          <Text style={styles.appTitle}>NutriBrain</Text>
+          <Text style={styles.tagline}>Nutrition Powered by Intelligence.</Text>
         </View>
 
         {/* Greeting */}
@@ -222,27 +216,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F7F8FA",
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  titleBar: {
     paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 24,
-  },
-  dateContainer: {
-    flexDirection: "row",
+    paddingTop: 20,
+    paddingBottom: 8,
     alignItems: "center",
-    gap: 10,
   },
-  dateText: {
-    fontSize: 16,
+  appTitle: {
+    fontSize: 28,
+    fontWeight: "800",
+    color: "#4A6CF7",
+    letterSpacing: -0.5,
+  },
+  tagline: {
+    fontSize: 14,
     color: "#707070",
     fontWeight: "500",
+    marginTop: 8,
+    letterSpacing: 0.2,
   },
   greetingContainer: {
     paddingHorizontal: 24,
     marginBottom: 32,
+    marginTop: 28,
   },
   greetingText: {
     fontSize: 16,
